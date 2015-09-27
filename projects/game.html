@@ -1,0 +1,534 @@
+<html>
+<head>
+	<title>Math Town</title>
+	<script type="text/javascript" src="/lib/phaser/dist/phaser.min.js"></script>
+		<script>
+			/*##### GLOBAL VARIABLES #####*/
+			//gamescreen size
+			var width = 800;
+			var height = 600;
+			//image references
+			var startButton;
+			var plusSign;
+			var equalSign;
+			var numberImages = {}; //number buffer
+			var numberCount = [1,1,1,1,1,1,1,1,1]; //stores num images drawn for each #
+
+			//keyboard reference
+			var keyboard;
+
+			//hold information relative to game
+			var equation = {images:{}, newEquation:true};
+			var gameOptions = {operand:'+', difficulty:'h', digits:1};
+			var gameState = 'S'; 
+
+
+//GAME LOOPS, run based on gamestate
+			//main gameloop		
+			function update(){
+				switch(gameState){
+					case('G'):return gameLoop();
+					case('R'):return rightAnswerLoop();
+					case('N'):return notRightAnswerLoop();
+					case('S'):return startScreenLoop();
+					case('M'):return menuScreenLoop();
+					case('P'):return pauseLoop();
+					case('W'):return wonGameLoop();
+					case('L'):return lostGameLoop();
+				}
+			}
+			var tick = true;
+			var lostGameLoop = function(){
+				if(tick){
+				
+					drawImage('lose', width * 0.3, height  * 0.4 );
+					tick = false;
+				}
+			}
+			var wonGameLoop = function(){
+				if(tick){
+				
+					drawImage('lose', width * 0.3, height * 0.4 );
+					tick = false;
+				}
+			}
+
+			var gameLoop = function(){
+				//handle sprites
+				sprites.animate(); 
+				sprites.movement();
+
+				if(equation.newEquation){
+					return newEquation();
+				}
+
+				timeDisplay.tick();
+				if(timeDisplay.timesUp){
+					equation.images.tooslow = drawImage('tooslow', width * 0.5, height * 0.3);
+					equation.newEquation = true;
+					firstWrongAnswerLoop = true;
+					gameState = 'N';
+				}
+				keyboard.onUpCallback = function(evt){
+					mathLogic(evt);
+				}
+				
+			}
+			var firstRightAnswerLoop;
+			var rightAnswerLoop = function(){
+				console.log('GOT CALELD BAY')
+				sprites.animate();
+				sprites.movement();
+				if(firstRightAnswerLoop){
+					keyboard.onUpCallback = function(evt){
+
+					}
+					firstRightAnswerLoop=false;
+					sprites.player.playAnimation = 'walk';
+					sprites.player.animationLoops = 100;
+					sprites.player.moveDistance = 300;
+					sprites.player.moveRate = 3;
+					sprites.player.direction = "x";	
+					sprites.player.callback = function(){
+						sprites.player.playAnimation = 'attack';
+						sprites.player.animationLoops = 36;
+						sprites.player.callback = function(){
+							if(--sprites.wizard.health < 1){ 
+								sprites.wizard.animations.play('death',12,false,true);
+								gameState = 'W';	
+								sprites.blood = game.add.sprite(sprites.wizard.position.x - 80, sprites.wizard.position.y +30, 'blood');
+								sprites.blood.animations.add('squirt')
+								sprites.blood.animations.play('squirt', 12, false, true);
+								sprites.player.playAnimation = 'walk';
+								sprites.player.animationLoops = 100;
+								sprites.player.moveDistance = 300;
+								sprites.player.moveRate = 3;
+								sprites.player.direction = '-x';
+								return;
+							}
+							sprites.blood = game.add.sprite(sprites.wizard.position.x - 80, sprites.wizard.position.y +30, 'blood');
+							sprites.blood.animations.add('squirt')
+							sprites.blood.animations.play('squirt', 12, false, true);
+							sprites.player.playAnimation = 'walk';
+							sprites.player.animationLoops = 100;
+							sprites.player.moveDistance = 300;
+							sprites.player.moveRate = 3;
+							sprites.player.direction = '-x';
+							sprites.player.callback = function(){
+								sprites.player.callback = false;
+								gameState = 'G';
+							}
+						}
+					}
+				}		
+			}
+			var firstWrongAnswerLoop;
+			var notRightAnswerLoop = function(){
+				console.log('GOT CALLED BABY')
+				sprites.animate();
+				sprites.movement();
+				if(firstWrongAnswerLoop){
+										keyboard.onUpCallback = function(evt){
+						
+					}
+					firstWrongAnswerLoop = false;
+					sprites.wizard.playAnimation = 'walk';
+					sprites.wizard.animationLoops = 100;
+					sprites.wizard.moveDistance = 300;
+					sprites.wizard.moveRate = 3;
+					sprites.wizard.direction = "-x"
+					sprites.wizard.callback = function(){
+						sprites.wizard.playAnimation = 'attack';
+						sprites.wizard.animationLoops = 36;
+						sprites.wizard.callback = function(){
+							sprites.blood = game.add.sprite(sprites.player.position.x + 40, sprites.player.position.y +30, 'blood');
+							sprites.blood.animations.add('squirt')
+							sprites.blood.animations.play('squirt', 12, false, true);
+							if(--sprites.player.health < 1){
+								sprites.player.animations.play('death',12,false,true);
+								sprites.wizard.playAnimation = 'walk';
+								sprites.wizard.animationLoops = 100;
+								sprites.wizard.moveDistance = 300;
+								sprites.wizard.moveRate = 3;
+								sprites.wizard.direction = 'x';
+								gameState= 'L';
+								return;
+							}
+							sprites.wizard.playAnimation = 'walk';
+							sprites.wizard.animationLoops = 100;
+							sprites.wizard.moveDistance = 300;
+							sprites.wizard.moveRate = 3;
+							sprites.wizard.direction = 'x';
+							sprites.wizard.callback = function(){
+								sprites.wizard.callback = false;
+								gameState = 'G';
+							}
+						}
+					}
+				}
+			}
+
+			var mathLogic = function(evt){
+				console.log('kb event',evt.keyCode)
+				if(evt.keyCode < 48 || evt.keyCode > 57){
+					return;
+				}
+				//draw input
+				if(equation.input > 0){
+					equation.images['input4'] = drawImage(evt.keyCode-48,width*0.68, height * 0.02);
+				}else{
+					if(evt.keyCode - 48 === 0){
+					}else{
+						equation.images['input3'] = drawImage(evt.keyCode-48, width*0.58, height * 0.02);
+					}
+				}
+				equation.input += evt.keyCode - 48;
+				if(equation.input === equation.answer){
+					equation.images.result = drawImage('correct', width *0.5, height *0.3);
+					equation.newEquation = true;
+					firstRightAnswerLoop = true;
+					gameState = 'R'
+				} else{
+					//wrong
+					if(equation.input * 10 > equation.answer){
+						equation.images.result = drawImage('wrong', width * 0.5, height * 0.3);
+						equation.newEquation = true;
+						firstWrongAnswerLoop = true;
+						gameState = 'N';
+					}else if(equation.input * 10 <= equation.answer){
+						equation.input = equation.input * 10;
+					}
+				}
+			}
+
+			var blink = 0; //blinking press enter thingy
+			var startScreenLoop = function(){
+				sprites.animate();
+				sprites.movement();
+				blink++;
+				if(blink > 30){
+					startButton.y = -300;
+				}
+				if(blink > 40){
+					blink = 0;
+					startButton.y = height/3;
+				}
+				keyboard.onUpCallback = function(evt){
+
+					if(evt.keyCode === 13){
+						//set animations and movement
+						sprites.player.playAnimation = 'walk';
+						sprites.player.animationLoops = 100;
+						sprites.player.moveDistance = 300;
+						sprites.player.moveRate = 3;
+						sprites.player.direction = "x";
+						sprites.wizard.playAnimation = 'walk';
+						sprites.wizard.animationLoops = 100;
+						sprites.wizard.moveDistance = 300;
+						sprites.wizard.moveRate = 3;
+						sprites.wizard.direction = "-x";
+						removeImage(startButton, 0);
+						keyboard.onUpCallback = null;		
+					}
+				}
+
+				if(sprites.wizard.animationLoops < 1){
+					gameState = 'G';
+					plusSign = drawImage('plus', width * 0.25, height * 0.055);
+					equalSign = drawImage('equals', width * 0.48, height * 0.1);
+				}
+			}
+
+			var pauseLoop = function(){
+
+			}
+			//return options functionType, difficulty
+			var menuScreenLoop = function(){
+
+			}
+
+
+/*########## GAME SETUP - load assets ##########*/ 
+			function preload(){
+				game.load.image('background', '/projects/mathImages/background.png');
+				game.load.image('zero', '/projects/mathImages/number_0_white.png');
+				game.load.image('1', '/projects/mathImages/number_1_white.png');
+				game.load.image('2','/projects/mathImages/number_2_white.png');
+				game.load.image('3', '/projects/mathImages/number_3_white.png');
+				game.load.image('4', '/projects/mathImages/number_4_white.png');
+				game.load.image('5', '/projects/mathImages/number_5_white.png');
+				game.load.image('6', '/projects/mathImages/number_6_white.png');
+				game.load.image('7', '/projects/mathImages/number_7_white.png');
+				game.load.image('8', '/projects/mathImages/number_8_white.png');
+				game.load.image('9', '/projects/mathImages/number_9_white.png');
+				game.load.image('win', '/projects/mathImages/win.png');	
+				game.load.image('lose', '/projects/mathImages/lose.png');
+				game.load.image('startButton', '/projects/mathImages/press_enter.png');
+				game.load.image('plus', '/projects/mathImages/plus.png');
+				game.load.image('equals', '/projects/mathImages/equals.png');
+				game.load.image('correct', '/projects/mathImages/correct.png');
+				game.load.image('wrong', '/projects/mathImages/wrong.png');
+				game.load.image('tooslow', '/projects/mathImages/tooslow.png');
+				game.load.spritesheet('rogue','/projects/mathImages/rogue.png',160,160,50);
+				game.load.spritesheet('wizard', '/projects/mathImages/wizard.png', 160, 160, 50);
+				game.load.spritesheet('blood', '/projects/mathImages/blood.png', 60,60,6);
+			}
+
+			function create(){
+				game.add.image(-200,-200,'background');
+				startButton = drawImage('startButton',width/3,height/3);
+				//initialize keyboard
+				keyboard = game.input.keyboard; 
+				
+				//initialize timer
+				timeDisplay.initialize();  
+
+				/*SETUP SPRITES - start offscreen*/
+				var player = game.add.sprite(-160, height*0.7,'rogue');
+				player.animations.add('rest',[0,1,2,3,4,5,6,7,8,9]);
+				player.animations.add('throw',[10,11,12,13,14,15,16,17,18,19]);
+				player.animations.add('walk',[20,21,22,23,24,25,26,27,28,29]);
+				player.animations.add('attack',[30,31,32,33,34,35,36,37,38,39]);
+				player.animations.add('death', [40,41,42,43,44,45,46,47,48,49]);
+				player.defaultAnimation = 'rest';
+				player.animations.play(player.defaultAnimation, 12, true);
+				player.health = 3;
+
+				var wizard = game.add.sprite(width + 160, height *0.7, 'wizard');
+				wizard.animations.add('rest',[0,1,2,3,4,5,6,7,8,9]);
+				wizard.animations.add('throw',[10,11,12,13,14,15,16,17,18,19]);
+				wizard.animations.add('walk',[20,21,22,23,24,25,26,27,28,29]);
+				wizard.animations.add('attack',[30,31,32,33,34,35,36,37,38,39]);
+				wizard.animations.add('death', [40,41,42,43,44,45,46,47,48,49]);	
+				wizard.defaultAnimation = 'rest';
+				wizard.animations.play(wizard.defaultAnimation,12, true);
+				wizard.scale.x = -1;
+				wizard.health = 3;
+
+
+				sprites.blood;
+				sprites.player = player;
+				sprites.wizard = wizard;
+
+			}
+
+			var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
+				preload: preload, 
+				create:create,
+				update:update
+			});
+
+
+/*#### TIMEDISPLAY- used to show time left to answer each question #####*/
+			var timeDisplay = {};
+			timeDisplay.width = width * 0.6;
+			timeDisplay.startPoint = width * 0.2;
+
+			timeDisplay.resetTimer = function(){
+				timeDisplay.timesUp = false;
+				timeDisplay.line.end.x = timeDisplay.endPoint;				
+				//can have 1-3 seconds to answer which is 60-180 frames
+				var seconds;
+				switch(gameOptions.difficulty){
+					case('e'):
+						seconds = 4;
+						break;
+					case('m'):
+						seconds = 2.5;
+						break;
+					case('h'):
+						seconds = 1;
+						break;
+				}
+				timeDisplay.tickSize = (Math.ceil(Math.random() * seconds)) * 60; //frames timer takes to complete
+				timeDisplay.tickSize = timeDisplay.width/timeDisplay.tickSize; //percent of timer width a tick is
+			}
+			timeDisplay.initialize = function(){
+				timeDisplay.endPoint = timeDisplay.startPoint + timeDisplay.width;
+				timeDisplay.line = new Phaser.Line(	timeDisplay.startPoint, height*0.05, 
+													timeDisplay.endPoint, height*0.05);
+				timeDisplay.timesUp = false;
+				timeDisplay.timeLeft = timeDisplay.width;
+				//can have 1-3 seconds to answer which is 60-180 frames
+				timeDisplay.tickSize = (Math.ceil(Math.random() * 3)) * 60; //frames timer takes to complete
+				timeDisplay.tickSize = timeDisplay.width/timeDisplay.tickSize; //percent of timer width a tick is
+			} 
+			timeDisplay.tick = function(){	
+				if(!timeDisplay.timesUp){
+					timeDisplay.line.end.x = timeDisplay.line.end.x - timeDisplay.tickSize;	
+					timeDisplay.setLineColor();
+					game.debug.geom(timeDisplay.line, timeDisplay.setLineColor());
+					if(timeDisplay.line.end.x <= timeDisplay.line.start.x){
+						console.log('you loser');
+						timeDisplay.timesUp = true;
+					}
+				}
+			}
+			timeDisplay.setLineColor = function(){
+				var dangerZone = (timeDisplay.line.end.x - timeDisplay.line.start.x)/timeDisplay.tickSize;
+				if(dangerZone > 60){
+					return 'green';
+				}else if(dangerZone > 40){
+					return 'yellow'
+				}else{
+					return 'red'
+				}
+			}
+
+
+/*########### UTILITY STUFF FUNCTIONS ################*/
+			/*BUILD AND DRAW NEW EQUATIONS*/
+			var newEquation = function(){
+				console.log('makin new equationRigh')
+				if(equation.newEquation){
+					//reset timer
+					timeDisplay.resetTimer();
+					//remove old number images
+					for(var x in equation.images){
+						removeImage(equation.images[x],2);
+					}
+					equation.input = 0;
+					//create equation
+					var multiplier = gameOptions.digits === 2 ? 99 : 9;
+					equation.right = Math.ceil(Math.random() * multiplier); //get new numbers
+					equation.left = Math.ceil(Math.random() * multiplier);
+					switch(gameOptions.operand){
+						case('+'):
+							equation.answer = equation.right + equation.left; 
+							break;
+						case('-'):
+							equation.answer = equation.right
+							if(equation.right>equation.left) {equation.right=equation.left,equation.left=equation.answer}//quick swap
+							equation.answer = equation.left + equation.right;
+							break;
+						case('*'):
+							equation.answer = equation.right * equation.left;
+							break;
+					}
+					//draw new numbers
+					var rightLocation = width * 0.15;
+					var leftLocation = width * 0.37;
+					if(gameOptions.digits === 2){
+						equation.images['right1'] = drawImage(Math.floor(equation.right/10).toString(),width * 0.1,height * 0.015); 
+						equation.images['left1'] = drawImage(Math.floor(equation.left/10).toString(),width * 0.5, height * 0.015);
+						rightLocation = width * 0.19;
+						leftLocation = width * 0.59;
+					}	
+					equation.images['right2'] = drawImage((equation.right%10).toString(),rightLocation ,height * 0.015);
+					equation.images['left2'] = drawImage((equation.left%10).toString(), leftLocation, height * 0.015);
+
+					equation.newEquation = false;
+				}
+			}
+
+			/*SPRITES, handles sprites*/
+			var sprites = {};
+			/*ANIMATE  -
+			playAnimation = 'animation',
+			animationLoops = 60 
+			to change to non default animation for 60 loops*/
+			sprites.animate = function(){
+				for(var x in sprites){
+					if(sprites[x].playAnimation){
+						if(sprites[x].animations.currentAnim.name === sprites[x].playAnimation){
+							sprites[x].animationLoops--;
+							if(sprites[x].animationLoops < 1){
+								sprites[x].playAnimation = false;
+								sprites[x].animations.play(sprites[x].defaultAnimation, 12, true);
+								if(typeof(sprites[x].callback)==='function') sprites[x].callback();
+							}
+						}else{
+							sprites[x].animations.play(sprites[x].playAnimation, 12, true);
+						}
+					}
+				}
+			}
+			/*MOVEMENT -
+			moveDistance = 60 distance to move
+			moveRate = 2 pixels per loop
+			direction = x,-x,y,-y*/
+			sprites.movement = function(){
+				for(var x in sprites){
+					if(sprites[x].moveDistance > 0){
+						sprites[x].moveDistance -= sprites[x].moveRate;
+						switch(sprites[x].direction){
+							case("x"):
+								sprites[x].position.x += sprites[x].moveRate;
+								break;
+							case("-x"):
+								sprites[x].position.x -= sprites[x].moveRate;
+								break;
+							case("y"):
+								sprites[x].position.y += sprites[x].moveRate;
+								break;
+							case("-y"):
+								sprites[x].position.y -= sprites[x].moveRate;
+								break;
+						}
+					}
+				}
+			}
+
+			/*DRAWING / REMOVING / CACHING IMAGES*/
+			var current1, current2, current3, current4;
+			//draws image to x,y from cache creates new if needed
+			var drawImage = function(image,x,y){
+				if(image < 0 || image > 9){
+					return;
+				}
+				if(image === 0){
+					image = 'zero';
+				}
+
+				//num object exists
+				if(numberImages.hasOwnProperty(image)){
+					for(var i = 0; i < numberImages[image].length; i++){
+						if(numberImages[image][i].available){
+							numberImages[image][i].available = false;
+							numberImages[image][i].data.visible = true;
+							numberImages[image][i].data.x = x;
+							numberImages[image][i].data.y = y;
+							return numberImages[image][i].data;	
+						}
+					}
+					var newIm = game.add.image(x,y,image);
+					console.log(newIm);
+					numberImages[image].push({available:false,data:newIm})
+					return newIm;	
+				}else{
+					var newImg = game.add.image(x,y,image);
+					numberImages[image] = [{available:false, data:newImg}];
+					console.log(numberImages)
+					return newImg;
+				}
+			}
+			//removes image, stores in cache unless > imageCap then destroys
+			var removeImage = function(image, imageCap){
+				if(numberImages.hasOwnProperty(image.key)){
+					if(numberImages[image.key].length < imageCap){
+						for(var x in numberImages[image.key]){
+							if(!numberImages[image.key][x].available){
+								numberImages[image.key][x] = {available:true, data:image}
+								image.kill();
+							}
+						}
+					}else if(numberImages[image.key].length >= imageCap){
+						image.destroy();
+						for( x in numberImages[image.key]){
+							if(!numberImages[image.key][x].available){
+								numberImages[image.key].splice(x,1);
+							}
+						}
+					}
+				}
+			}
+
+		</script>
+	</head>
+	<body>
+		<h2>Do math using the numkeys before the timer runs down, dont lose.</h2>
+		<hr>
+
+	</body>
+</body>
+</html>
