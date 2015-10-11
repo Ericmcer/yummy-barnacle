@@ -1,14 +1,21 @@
 <html>
 <head>
 	<title>Eric's site</title>
-	<!--Looking for bootstrap? well it aint here! -->
+	<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 	<link rel="stylesheet" href="lib/materialize/css/materialize.min.css">
 	<link rel="stylesheet" href="css/site.css">
+	<style>
+		.details{
+
+		}
+	</style>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 
 	<script type="text/javascript" src="lib/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="lib/materialize/js/materialize.min.js"></script>
+	<script type="text/javascript" src="lib/angular/angular.min.js"></script>
 </head>
 <body>
 	<nav style="background-color:#a23253">
@@ -23,7 +30,280 @@
 	      	Eric McElyea
 	      </div>
 	    </div>
-
   	</nav>
+  	<div data-ng-app="Resume" data-ng-controller="ResumeCtrl">
+			<div class="row" style="margin-top:10px;">
+				<!-- sidebar -->
+				<div class="col s3">
+					<button class="btn waves-effect waves-light btn-large" 
+						ng-click="showView('e')"
+						style="margin-top:10px;">Experience
+						<i class="material-icons right" ng-show="!(resume.show === 'e')">fast_forward</i>
+						<i class="material-icons right" ng-show="(resume.show === 'e')">fast_rewind</i>
+					</button>
+					<button class="btn waves-effect waves-light btn-large" 
+							ng-click="showView('s')"
+							style="margin-top:10px;">Skills
+						<i class="material-icons right" ng-show="!(resume.show === 's')">fast_forward</i>
+						<i class="material-icons right" ng-show="(resume.show === 's')">fast_rewind</i>
+					</button>
+					<button class="btn waves-effect waves-light btn-large" 
+					 		ng-click="showView('ed')"
+					 		style="margin-top:10px;">Education
+						<i class="material-icons right" ng-show="!(resume.show === 'ed')">fast_forward</i>
+						<i class="material-icons right" ng-show="(resume.show === 'ed')">fast_rewind</i>
+					</button>
+				</div>
+				<!--page contentetststs -->
+				<div class="col s9">
+					<div ng-show="resume.show === 'e'">
+						<h4>Acutulus Enterprises</h4>
+						<label>January 2015 - Present</label>
+						<ul class="collection with-header">
+							<li class="collection-header"><h6>Duties:</h6></li>
+							<li class="collection-item">Work on companys core technology. A platform for rapidly building application backends.</li>
+							<li class="collection-item">Build full stack applications for client contracts.</li>
+							<li class="collection-item">Maintain applications for clients.</li>
+							<li class="collection-item">Assist client engineering teams in integrations.</li>
+							<li class="collection-header"><h6>Projects:</h6></li>
+							<li class="collection-item"><strong>Recruitment Application</strong> - Built front and back end, designed DB architecture, integrated with job board applications like Indeed.com</li>
+							<li class="collection-item"><strong>Cordova Android plugins</strong> - Built native Android plugins for cordova hybrid phone applications.</li>
+							<li class="collection-item"><strong>Company Framework</strong> - Built alot of the frontend and debugged alot of the backend. Front end work included tools for clients to moniter and change their applications, and an administrator GUI for easily manipulating and monitoring contents of application Database.</li> 
+						</ul>
+					</div>		
+					<div ng-show="resume.show === 's'">
+						<div style="display:inline-block;margin-top:10px;">
+							<button class="btn waves-effect waves-light btn-small" 
+									ng-click="resume.skills=== 'l' ? resume.skills = '' : resume.skills = 'l'">
+								Languages</button>
+							<button class="btn waves-effect waves-light btn-small" 
+									ng-click="resume.skills === 'f' ? resume.skills = '' : resume.skills = 'f'">
+								Frameworks / Server Technologies / SDKs
+							</button>
+							<button class="btn waves-effect waves-light btn-small"
+									ng-click="resume.skills === 'd' ? resume.skills='' : resume.skills = 'd'">
+								Databases
+							</button>
+						</div>
+				      	<table class="highlight responsive-table" ng-show="resume.skills === 'l'">
+				 		 	<thead>
+				          		<tr>
+				            	    <th data-field="id">Skill</th>
+				            		<th data-field="name">Experience</th>
+				            	    <th data-field="price">Comfort Level</th>
+				         		</tr>
+				        	</thead>
+				        	<tbody>
+				        		<tr ng-mouseover="resume.js = true;" ng-mouseleave="resume.js = false;">
+				        			<td >Javascript</td>
+				        			<td>Personal and professional</td>
+				        			<td>Very Comfortable</td>
+				        		</tr>
+				        		<tr  ng-show="resume.js">
+					        		<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+					        			Javascript is my favorite. It is the primary language I use at work and my language of choice for personal projects.
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover="resume.java = true" ng-mouseleave="resume.java = false">
+				        			<td>Java</td>
+				        			<td>School, Personal, Professional</td>
+				        			<td>Comfortable</td>
+				        		</tr>
+				        		<tr ng-show="resume.java">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+				        				Java is my second favorite language. I enjoy Android application programming.
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover="resume.obj_c = true" ng-mouseleave="resume.obj_c = false">
+				        			<td>Objective-C</td>
+				        			<td>Professional</td>
+				        			<td>Don't like it but can use.</td>
+				        		</tr>
+				        		<tr ng-show="resume.obj_c">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+				        				Not a huge fan of objective-c, but I have had to become familiar with it. Mostly encountered when adapting native iOS code to Android.
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover="resume.cpp = true" ng-mouseleave="resume.cpp = false">
+				        			<td>C++/C</td>
+				        			<td>School</td>
+				        			<td>Comfortable</td>
+				        		</tr>
+				        		<tr ng-show="resume.cpp">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+				        				College classes were mainly based in C++. Learned all the basic CS concepts in it. Did a few projects in C. 
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover='resume.python = true' ng-mouseleave="resume.python= false">
+				        			<td>Python</td>
+				        			<td>School</td>
+				        			<td>Needs work</td>
+				        		</tr>
+				        		<tr ng-show="resume.python">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+				        				Have worked with it for fun on personal projects, doesnt seem like it would be too hard to pick up completely if I needed too. 
+				        			</td>
+				        		</tr>
+				        	</tbody>
+				    	</table>
+				      	<table class="highlight responsive-table" ng-show="resume.skills === 'f'">
+				 		 	<thead>
+				          		<tr>
+				            	    <th data-field="id">Skill</th>
+				            		<th data-field="name">Experience</th>
+				            	    <th data-field="price">Comfort Level</th>
+				         		</tr>
+				        	</thead>
+				        	<tbody>
+				        		<tr ng-mouseover="resume.table.node = true;" ng-mouseleave="resume.table.node = false;">
+				        			<td >NodeJS</td>
+				        			<td>One Year Professional</td>
+				        			<td>Very Comfortable</td>
+				        		</tr>
+				        		<tr ng-show="resume.table.node">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+				        				Have been using for almost every backend I make, personal and professional. Lots of experience with it.
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover="resume.table.express = true;" ng-mouseleave="resume.table.express = false;">
+				        			<td >ExpressJS</td>
+				        			<td>One Year Professional</td>
+				        			<td>Very Comfortable</td>
+				        		</tr>
+				        		<tr ng-show="resume.table.express">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+				        				Cant really be good at Node unless you know express as well. 
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover='resume.table.angular = true;' ng-mouseleave="resume.table.angular = false;">
+				        			<td>AngularJS</td>
+				        			<td>One Year Professional</td>
+				        			<td>Very Comfortable</td>
+				        		</tr>
+				        		<tr ng-show="resume.table.angular">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+				        				AngularJS is my favorite front-end Javascript framework. Probably partly because I have spent a whole lotta time working with it. It definitely has its failings but if you dont fight it, it is very nice to use.
+				        			</td>
+				        		</tr>	
+				        		<tr ng-mouseover='resume.table.react = true;' ng-mouseleave="resume.table.react = false;">
+				        			<td>ReactJS</td>
+				        			<td>Personal</td>
+				        			<td>Can use it</td>
+				        		</tr>
+				        		<tr ng-show="resume.table.react">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+				        				Have played around with ReactJS and am tempted to use it for more stuff. I use so much Angular at work though it is hard to justify really sinking myself into it though.
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover='resume.table.php = true;' ng-mouseleave="resume.table.php = false;">
+				        			<td>PHP/ PHP Frameworks</td>
+				        			<td>Forced to work on it sometimes</td>
+				        			<td>Comfortable</td>
+				        		</tr>
+				        		<tr ng-show="resume.table.php">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+				        				Not a huge fan of PHP or other servers that rely on templating to generate dynamic pages. Many clients run PHP servers though so I have picked it up to help out. 
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover='resume.table.jee = true;' ng-mouseleave="resume.table.jee = false;">
+				        			<td>Java Enterprise Edition</td>
+				        			<td>School</td>
+				        			<td>Comfortable</td>
+				        		</tr>
+				        		<tr ng-show="resume.table.jee">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+				        				Not a huge fan of JEE or other servers that rely on templating to generate dynamic pages. 
+				        				This was the server technology we were taught in school though so I became somewhat comfortable with it.
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover="resume.table.android = true;" ng-mouseleave="resume.table.android = false">
+				        			<td>Android SDK and NDK</td>
+				        			<td>Professional,Personal,School</td>
+				        			<td>Comfortable</td>
+				        		</tr>
+				        		<tr ng-show="resume.table.android">
+			        				<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;">
+			        					Have used both the SDK and NDK to create Android applications. I am comfortable with the main concepts of Android development (Activitys, Intents, Fragments, etc).
+			        				</td>		
+			               		</tr>
+			               		<tr ng-mouseover="resume.table.cordova = true;" ng-mouseleave="resume.table.cordova = false;">
+
+			               		</tr>
+				        	</tbody>
+					    </table>
+				   	    <table class="highlight responsive-table" ng-show="resume.skills === 'd'">
+				 		 	<thead>
+				          		<tr>
+				            	    <th data-field="id">Skill</th>
+				            		<th data-field="name">Experience</th>
+				            	    <th data-field="price">Comfort Level</th>
+				         		</tr>
+				        	</thead>
+				        	<tbody>
+				        		<tr ng-mouseover="resume.table.mongo = true;" ng-mouseleave="resume.table.mongo = false;">
+				        			<td >MongoDB</td>
+				        			<td>Professional,Personal</td>
+				        			<td>Very Comfortable</td>
+				        		</tr>
+				        		<tr>
+					        		<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;" ng-show="resume.table.mongo">
+					        			MongoDB is my database of choice. I like it because you can plug reads from database directly in to the front-end, like an Angular ng-repeat with no data manipulation. Keeps code very clean if well architected.
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover="resume.table.mongoose = true;" ng-mouseleave="resume.table.mongoose=false;">
+				        			<td>Mongoose</td>
+				        			<td>Professional, Personal</td>
+				        			<td>Very Comfortable</td>
+				        		</tr>
+				        		<tr ng-show="resume.table.mongoose">
+				        			<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:400px;height:auto;" ng-show="resume.table.mongoose">
+				        				Have used mongoose pretty much any time I use mongoDB. When you hook it up correctly and synchronize your front-end and mongoose validators you can achieve alot with very little.
+				        			</td>
+				        		</tr>
+				        		<tr ng-mouseover='resume.table.sql = "angular"' ng-mouseleave="resume.table.sql=false;">
+				        			<td>MySQL/SQL/PostgreSQL</td>
+				        			<td>School, Professional</td>
+				        			<td>Comfortable</td>
+				        		</tr>
+			        			<tr>
+					        		<td class="z-depth-4" style="background-color:white;z-index:100;position:absolute;width:35%;height:auto;" ng-show="resume.table.sql">
+					        			Have encountered all of these at different times. Did classes on DB architecture and relational algebra/calculus in school. Not my favorite but I am comfortable working on relational databases.
+				        			</td>
+				        		</tr>
+				        	</tbody>
+			       	 	</table>
+			    	</div>	
+					<div ng-show="resume.show === 'ed'">	
+						<h5>Cal State East Bay</h5>
+						<label>January 2013 - Present</label>
+						<p>Have been slowly working on my CS degree while working. School definitely offers some important core CS concept stuff (and alot of not important CS stuff haha).</p>
+						<ul class="collection with-header">
+							<li class="collection-header"><h5>Important classes completed</h5></li>
+							<li class="collection-item">Data Structures</li>
+							<li class="collection-item">Operating Systems</li>
+							<li class="collection-item">Systems Programming</li>
+							<li class="collection-item">OOP</li>
+							<li class="collection-item">Web Development</li>
+							<li class="collection-item">Mobile Development</li>
+							<li class="collection-item">Data Communications and Networks</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+  		</div>
+  	<script type="text/javascript">
+  		angular.module('Resume',[])
+  		.controller('ResumeCtrl', ['$scope',
+  			function($scope){
+  				$scope.resume = {};
+  				$scope.resume.show = 'e';
+  				$scope.showView = function(view){
+  					$scope.resume.show === view ? $scope.resume.show = '' : $scope.resume.show = view;
+  				}
+  				window.scoperoni = $scope;
+
+  			}
+  		])
+  	</script>
 </body>
 </html>

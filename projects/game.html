@@ -19,7 +19,7 @@
 
 			//hold information relative to game
 			var equation = {images:{}, newEquation:true};
-			var gameOptions = {operand:'+', difficulty:'h', digits:1};
+			var gameOptions = {operand:'+', difficulty:'m', digits:1};
 			var gameState = 'S'; 
 
 
@@ -40,14 +40,12 @@
 			var tick = true;
 			var lostGameLoop = function(){
 				if(tick){
-				
 					drawImage('lose', width * 0.3, height  * 0.4 );
 					tick = false;
 				}
 			}
 			var wonGameLoop = function(){
 				if(tick){
-				
 					drawImage('lose', width * 0.3, height * 0.4 );
 					tick = false;
 				}
@@ -128,7 +126,7 @@
 				sprites.animate();
 				sprites.movement();
 				if(firstWrongAnswerLoop){
-										keyboard.onUpCallback = function(evt){
+					keyboard.onUpCallback = function(evt){
 						
 					}
 					firstWrongAnswerLoop = false;
@@ -383,7 +381,7 @@
 				if(equation.newEquation){
 					//reset timer
 					timeDisplay.resetTimer();
-					//remove old number images
+					//remove old images
 					for(var x in equation.images){
 						removeImage(equation.images[x],2);
 					}
@@ -470,7 +468,6 @@
 			}
 
 			/*DRAWING / REMOVING / CACHING IMAGES*/
-			var current1, current2, current3, current4;
 			//draws image to x,y from cache creates new if needed
 			var drawImage = function(image,x,y){
 				if(image < 0 || image > 9){
@@ -527,6 +524,7 @@
 	</head>
 	<body>
 		<h2>Do math using the numkeys before the timer runs down, dont lose.</h2>
+		<p><i>Two sprites done by <a href="http://calciumtrice.tumblr.com/">calciumtrice</a></i></p>
 		<hr>
 
 	</body>
