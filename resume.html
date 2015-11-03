@@ -36,26 +36,40 @@
 				<!-- sidebar -->
 				<div class="col s3">
 					<button class="btn waves-effect waves-light btn-large" 
+					 		ng-click="showView('c')"
+					 		style="margin-top:10px;min-width:150px;">Cover Letter
+						<i class="material-icons right" ng-show="(resume.show === 'c')">fast_forward</i>
+						<i class="material-icons right" ng-show="!(resume.show === 'c')">fast_rewind</i>
+					</button>
+					<button class="btn waves-effect waves-light btn-large" 
 						ng-click="showView('e')"
-						style="margin-top:10px;">Experience
-						<i class="material-icons right" ng-show="!(resume.show === 'e')">fast_forward</i>
-						<i class="material-icons right" ng-show="(resume.show === 'e')">fast_rewind</i>
+						style="margin-top:10px;min-width:150px;">Experience
+						<i class="material-icons right" ng-show="(resume.show === 'e')">fast_forward</i>
+						<i class="material-icons right" ng-show="!(resume.show === 'e')">fast_rewind</i>
 					</button>
 					<button class="btn waves-effect waves-light btn-large" 
 							ng-click="showView('s')"
-							style="margin-top:10px;">Skills
-						<i class="material-icons right" ng-show="!(resume.show === 's')">fast_forward</i>
-						<i class="material-icons right" ng-show="(resume.show === 's')">fast_rewind</i>
+							style="margin-top:10px;min-width:150px;">Skills
+						<i class="material-icons right" ng-show="(resume.show === 's')">fast_forward</i>
+						<i class="material-icons right" ng-show="!(resume.show === 's')">fast_rewind</i>
 					</button>
 					<button class="btn waves-effect waves-light btn-large" 
 					 		ng-click="showView('ed')"
-					 		style="margin-top:10px;">Education
-						<i class="material-icons right" ng-show="!(resume.show === 'ed')">fast_forward</i>
-						<i class="material-icons right" ng-show="(resume.show === 'ed')">fast_rewind</i>
+					 		style="margin-top:10px;min-width:150px;">Education
+						<i class="material-icons right" ng-show="(resume.show === 'ed')">fast_forward</i>
+						<i class="material-icons right" ng-show="!(resume.show === 'ed')">fast_rewind</i>
 					</button>
 				</div>
 				<!--page contentetststs -->
-				<div class="col s9">
+				<div class="col m9">
+					<div ng-show="resume.show === 'c'">
+						<h4>Cover Letter</h4>
+						<hr>
+						<p>&nbsp&nbsp&nbsp&nbsp Hey this is gonna be a quick cover letter, if you're already bored feel free to click the
+						 buttons over to the left to get to the meat of the resume. I currently do contract development and go to school. I was worried about my employability and actual usefulness with the skill set school was giving me so I taught myself web and mobile application development. I have been working for about a year now doing just that and I really enjoy it. </p>
+						 <p>&nbsp&nbsp&nbsp&nbsp To me the best skills a developer can have are open-mindedness, a desire to learn new platforms and technologies, and a strong core skill-set. Web development especially can get pretty hectic, with new frameworks, design philosophies, and server technologies rolling out all the time. I do a ton of AngularJS, and I have no illusions that I will still be doing it a few years from now.    </p>
+
+					</div>
 					<div ng-show="resume.show === 'e'">
 						<h4>Experience</h4>
 						<hr>
@@ -302,7 +316,7 @@
   		.controller('ResumeCtrl', ['$scope',
   			function($scope){
   				$scope.resume = {};
-  				$scope.resume.show = 'e';
+  				$scope.resume.show = 'c';
   				$scope.showView = function(view){
   					$scope.resume.show === view ? $scope.resume.show = '' : $scope.resume.show = view;
   				}

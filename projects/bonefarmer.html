@@ -1,0 +1,41 @@
+<html>
+<head>
+	<title>Math Town</title>
+	<script type="text/javascript" src="../lib/phaser/dist/phaser.min.js"></script>
+	
+		<script>	
+		(function(){
+			//FINAL VARIABLES FOR GAME WINDOW
+			var width = 1117;
+			var height = 724
+
+			function preload(){
+				game.load.image('background', 'bonefarmer_images/background.png');
+			}
+			
+			function create(){
+				game.add.image(0,0,'background');
+			}
+			
+			function update(){
+
+			}
+
+
+			var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
+				preload: preload, 
+				create:create,
+				update:update
+			});
+
+		})()	
+		</script>
+	</head>
+	<body>
+		<h2>The Bonefarmer, movement arrow keys, A to attack</h2>
+		<p><i>Artwork by <a href="http://calciumtrice.tumblr.com/">calciumtrice</a></i></p>
+		<hr>
+
+	</body>
+</body>
+</html>
