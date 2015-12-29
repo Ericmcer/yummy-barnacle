@@ -89,7 +89,7 @@
 				<datetimepicker data-ng-model="trip.date"></datetimepicker>
 			</div>
 			<div class="col-xs-6">
-				<button ng-show="trip.date" style="padding:0px;" class="btn btn-block btn-lg btn-info btn-round" ng-click="runTest()">Get Estimated Trip Time</button>
+				<button ng-show="trip.date && address.start.ready && address.end.ready"  style="padding:0px;" class="btn btn-block btn-lg btn-info btn-round" ng-click="runTest()">Get Estimated Trip Time</button>
 				<div id="map" style="height:400px;width:100%;margin:20px;"></div>
 			</div>
 			<div class="col-xs-2" ng-show="trip.timeInfo">
