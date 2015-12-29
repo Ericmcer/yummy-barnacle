@@ -1,0 +1,247 @@
+<html>
+<head>
+	<title>Traffic Test</title>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link href="mapsApi_assets/css/get-shit-done.css" rel="stylesheet">
+	<link rel="stylesheet" href="mapsApi_assets/angular-bootstrap-datetimepicker/src/css/datetimepicker.css"/>
+
+	<link href="mapsApi_assets/css/GSD.css" rel="stylesheet">
+</head>
+<body>
+	<!-- NAVbar -->
+	<div id="navbar-full" style="max-height:400px;">
+    <div id="navbar" style="max-height:400px;">
+    <div class="navigation-example"  style="background-image: url('mapsApi_assets/roadbg.jpg');max-height:400px;">
+         <nav class="navbar navbar-default navbar-transparent" role="navigation-demo">
+          <div class="container">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="#">Clear Ways</a>
+            </div>          
+            <ul class="nav navbar-nav navbar-right">
+            	<li style="color:white"><i>Inspirational saying</i></li>
+            </ul>
+
+          </div><!-- /.container-fluid -->
+        </nav>        
+            <div class="img-src" style="background-image: url('mapsApi_assets/roadbg.jpg')"></div>
+        </div>
+    </div><!--  end navbar -->
+
+</div>
+    <!-- END NAV -->
+
+	<div class="container" data-ng-app="traffic" data-ng-controller="trafficController">
+		<h3>Playin around with google maps api capabilities</h3>
+		<hr>
+		<div class="row">
+			<div class="col-xs-7">
+				<h4>Start Location:</h4>
+				<div class="col-xs-6">
+					<label>Street Address</label><br>
+					<input type="form-control" ng-model="address.start.address" ng-keyup="testAddress('start');" type="text"></input>
+				</div>
+				<div class="col-xs-6">
+					<label>City</label><br>
+					<input type="form-control" ng-model="address.start.city" ng-keyup="testAddress('start');" type="text"></input>
+				</div>
+				<div class="col-xs-6">
+					<label >State</label><br>
+					<input type="form-control" ng-model="address.start.state" ng-keyup="testAddress('start');" type="text"></input>
+				</div>
+
+			</div>
+			<div class="col-xs-5">
+				<div class="alert alert-warning" ng-show="msgs.start.insufficientInfo" style="margin-top:20px;" ng-cloak>{{msgs.start.insufficientInfo}}</div>
+				<div class="alert alert-info" ng-show="msgs.start.loading"  style="margin-top:20px;" ng-cloak>{{msgs.start.loading}} <i class="fa fa-refresh fa-spin"></i></div>
+				<div class="alert alert-success" ng-show="msgs.start.success" style="margin-top:20px;" ng-cloak>{{msgs.start.success}}</div>
+				<div class="alert alert-danger" ng-show="msgs.start.error" style="margin-top:20px;" ng-cloak>{{msgs.start.error}}</div>
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="col-xs-7">
+				<h4>End Location:</h4>
+				<div class="col-xs-6">
+					<label>Street Address</label><br>
+					<input type="form-control" ng-model="address.end.address" ng-keyup="testAddress('end');" type="text"></input>
+				</div>
+				<div class="col-xs-6">
+					<label>City</label><br>
+					<input type="form-control" ng-model="address.end.city" ng-keyup="testAddress('end');" type="text"></input>
+				</div>
+				<div class="col-xs-6">
+					<label >State</label><br>
+					<input type="form-control" ng-model="address.end.state" ng-keyup="testAddress('end');" type="text"></input>
+				</div>
+			</div>
+			<div class="col-xs-5">
+				<div class="alert alert-warning" ng-show="msgs.end.insufficientInfo" style="margin-top:20px;" ng-cloak>{{msgs.end.insufficientInfo}}</div>
+				<div class="alert alert-info" ng-show="msgs.end.loading" style="margin-top:20px;" ng-cloak>{{msgs.end.loading}} <i class="fa fa-refresh fa-spin"></i></div>
+				<div class="alert alert-success" ng-show="msgs.end.success" style="margin-top:20px;" ng-cloak>{{msgs.end.success}}</div>
+				<div class="alert alert-danger" ng-show="msgs.end.error" style="margin-top:20px;" ng-cloak>{{msgs.end.error}}</div>
+			</div>
+		</div>
+		<hr>
+		<div class="row" >
+			<h2>Get Time for trip in future</h2>
+			<div class="col-xs-4">
+				<datetimepicker data-ng-model="trip.date"></datetimepicker>
+			</div>
+			<div class="col-xs-6">
+				<button ng-show="trip.date" style="padding:0px;" class="btn btn-block btn-lg btn-info btn-round" ng-click="runTest()">Get Estimated Trip Time</button>
+				<div id="map" style="height:400px;width:100%;margin:20px;"></div>
+			</div>
+			<div class="col-xs-2" ng-show="trip.timeInfo">
+				<p>Start: {{address.start.geometry.address}}</p>
+				<p>End: {{address.end.geometry.address}}</p>
+				<p>Departing At: {{trip.displayDate}}</p>
+				<p>Distance: {{trip.timeInfo.distance.text}}</p>
+				<p>Travel Time: {{trip.timeInfo.duration.text}}</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="parallax-pro" style="margin-top:25px;">
+	    <div class="container">
+	        <div class="row">
+	            <div class="col-md-12 text-center">
+	            	This is just a testpage.
+	            </div>
+	        </div>    
+	        <div class="row">
+	             <div class="col-md-12 text-center">
+	                <div class="credits">
+	                    <a href="http://www.ericmcelyea.com">© 2015 Eric McElyea</a>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script type="text/javascript" src="mapsApi_assets/moment/moment.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+	<script type="text/javascript" src="mapsApi_assets/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
+	<script>
+		var map;
+		var directionsDisplay;
+
+		function initMap() {
+		  directionsDisplay = new google.maps.DirectionsRenderer();
+		  map = new google.maps.Map(document.getElementById('map'), {
+		    center: {lat: -34.397, lng: 150.644},
+		    zoom: 8
+		  });
+		  directionsDisplay.setMap(map);
+		}
+	</script>
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGtFE6TR4q7mr5dlsuAzO-VaftgHCLcKU&callback=initMap">
+    </script>	
+	<script>
+		var trafficModule = angular.module("traffic",['ui.bootstrap.datetimepicker']);
+		trafficModule.controller("trafficController", ['$scope','$http', '$timeout',
+			function($scope, $http, $timeout){
+
+				var key = "AIzaSyAGtFE6TR4q7mr5dlsuAzO-VaftgHCLcKU";
+
+				//hold data for each address
+				$scope.address = {start:{ready:false},end:{ready:false}};
+				$scope.trip = {};
+				//hold ui message response status for each address
+				$scope.msgs = {start:{},end:{}};
+				$scope.msgs.start.insufficientInfo = "Insufficient information to run test";
+				$scope.msgs.end.insufficientInfo = "Insufficient information to run test";
+			
+
+				var buildQueryString = function(trip){
+					var queryString = "";
+					queryString += $scope.address[trip].address ? $scope.address[trip].address.split(" ").join("+") + ",+" : "";
+					queryString += $scope.address[trip].city ? $scope.address[trip].city.split(" ").join("+") + ",+" : "";
+					queryString += $scope.address[trip].state ? $scope.address[trip].state.split(" ").join("+") : "";
+					return queryString;
+				}
+
+				//get trip time
+				$scope.runTest = function(){
+					var origin = new google.maps.LatLng($scope.address.start.geometry.coords.lat,
+														$scope.address.start.geometry.coords.lng);
+
+					var destination = new google.maps.LatLng($scope.address.end.geometry.coords.lat,
+															$scope.address.end.geometry.coords.lng);
+					
+					$scope.trip.displayDate = new Date($scope.trip.date);
+					var drivingOptions = {
+    									trafficModel: google.maps.TrafficModel.PESSIMISTIC,
+										departureTime: $scope.trip.displayDate
+										}
+
+					var service = new google.maps.DirectionsService();
+					
+					service.route({
+						origin:origin,
+						destination:destination,
+						travelMode:google.maps.TravelMode.DRIVING,
+						drivingOptions:drivingOptions
+					}, function(res,status){
+						if(status === "OK"){
+							var timeOfDay = $scope.trip.displayDate.getHours() % 12;
+							timeOfDay += ":" + $scope.trip.displayDate.getMinutes().toString();
+							timeOfDay += $scope.trip.displayDate.getHours() > 12 ? "pm" : "am"; 
+							$scope.trip.timeInfo = res.routes[0].legs[0];
+							$scope.trip.displayDate = $scope.trip.displayDate.getMonth() + "-" + $scope.trip.displayDate.getDate() + "-" + $scope.trip.displayDate.getFullYear() + ". " + timeOfDay;
+							
+							$scope.$apply();
+							directionsDisplay.setDirections(res);
+						}
+					});
+
+				}
+
+				//auto-fill dates as entered
+				$scope.timeoutRunning = false;
+				$scope.testAddress = function(trip){	
+					$scope.msgs[trip] = {};
+					$scope.msgs[trip].loading = "Attempting to get coordinates";				
+					
+					if($scope.timeoutRunning){
+						$timeout.cancel($scope.timeoutRunning);
+					}
+					$scope.timeoutRunning = $timeout(function(){
+					//test if bare minimum present needed to hit api
+						if($scope.address[trip].address && $scope.address[trip].address.length > 5 || 
+							$scope.address[trip].city && $scope.address[trip].city.length > 3 ||
+							$scope.address[trip].state && $scope.address[trip].state.length > 1){
+							
+							var queryString = buildQueryString(trip);
+							var address = "https://maps.googleapis.com/maps/api/geocode/json?address=" + queryString + "&key=" + key;
+							
+							$http.get(address)
+							.then(function(data){
+								$scope.msgs[trip] = {};
+								var parseData = {address:data.data.results[0].formatted_address, coords:data.data.results[0].geometry.location};
+								$scope.address[trip].ready = true;
+								$scope.address[trip].geometry = parseData;
+								$scope.msgs[trip].success = "Located Address : " + parseData.address;
+								$scope.msgs[trip].success += ". Coordinates :  LAT:" + parseData.coords.lat + ", LNG:" + parseData.coords.lng; 
+	 						}, function(err){
+	 							$scope.msgs[trip] = {};
+								$scope.msgs[trip].error = "An Error Has Occured " + err;
+								$scope.address[trip].ready = false;
+							});
+						}else{
+							$scope.address[trip].ready = false;
+							$scope.msgs[trip] = {};
+							$scope.msgs[trip].insufficientInfo = "Insufficient information to run test.";
+							return;
+						}
+					},300);
+				}
+
+			}
+		]);
+	</script>
+</body>
+</html>
