@@ -1,0 +1,189 @@
+<html>
+<head>
+	<title>Procedure Costs by hospital</title>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<style>
+	.dot {
+	  stroke: #000;
+	}
+	.axis path,
+	.axis line {
+	  fill: none;
+	  stroke: #000;
+	  shape-rendering: crispEdges;
+	}
+	.axis text {
+	    font-family: sans-serif;
+	    font-size: 11px;
+	}
+	.tooltip {
+	  position: absolute;
+	  width: 200px;
+	  height: 28px;
+	  pointer-events: none;
+	}
+	body{
+		width:90%;
+		margin-left:5%;
+		margin-right:5%;
+	}
+	</style>
+</head>
+<body>
+	<h4>Under Construction!!!!!</h4>
+	<h5>Data from <a href="https://data.cms.gov">https://data.cms.gov/</a></h5>
+	<div class="alert alert-info"  style="margin-top:20px;margin-bottom20px;text-align:center;font-size:16px;" id="displayProgress">Getting Data <i class="fa fa-refresh fa-spin"></i></div>
+
+	<select id="graphChoice" style="display:none;margin-bottom:10px;">
+		<option><--Select Procedure--></option>
+	</select>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script type="text/javascript">
+	/*
+	*	Hit .gov for medical data
+	*/
+	$(document).ready(function(){
+		var request = $.ajax({
+			type:"GET",
+			url:"https://data.cms.gov/api/views/97k6-zzx3/rows.json?accessType=DOWNLOAD"
+		})
+		request.done(function(data){
+			document.getElementById("displayProgress").innerHTML = "Got Data, Processing data for graph.";
+			processData(data);
+		})
+	});
+
+	//parse data into object with procedureCodes as keys;
+	//graphData = { code : [{city:"",state:"",hospital:"",total_cost:xxx}] };
+	//procedureCodes = {code:"procedure details"};
+	var graphData = {};
+	var procedureCodes = {};
+	var processData = function(data){
+		var procedureCode;
+		for(var i = 0; i < data.data.length; i++){
+			procedureCode = data.data[i][8].slice(0,3);
+			if(graphData.hasOwnProperty(procedureCode)){
+				graphData[procedureCode].push({
+												total_cost:data.data[i][17],
+												city:data.data[i][12],
+												state:data.data[i][13],
+												hospital:data.data[i][10]
+											});
+			}else{
+				graphData[procedureCode] = [{	
+												total_cost:data.data[i][17],
+												city:data.data[i][12],
+												state:data.data[i][13],
+												hospital:data.data[i][10]
+											}];
+				procedureCodes[procedureCode] = data.data[i][8];
+			}
+		}
+		console.log('PROCEDURECODES', procedureCodes);
+		console.log('GRAPHDATA', graphData);
+		//build procedure selector? selecter? whatever
+		document.getElementById("displayProgress").innerHTML = "Processing Completed, ready to draw graphs";
+		var select = document.getElementById("graphChoice");
+		select.style.display = "inherit";
+		for(var x in procedureCodes){
+			var option = document.createElement('option');
+			option.value = x;
+			option.innerHTML = procedureCodes[x];
+			select.appendChild(option);
+		}
+		select.addEventListener('change', graphProcedureChanged, false);
+	}
+
+	//draws point graph, inject graphData into D3 svg area
+	var graphProcedureChanged = function(evt){
+		var procedureCode = evt.target.value;
+		console.log(d3.max(graphData, function()))
+		//Update Axis and Scales
+		if(yScale){
+			yScale.domain([0, d3.max(graphData, function(d){ return d.total_cost; })]);
+		}else{	
+			yScale = d3.scale.linear()
+			   .domain([0, d3.max(graphData, function(d){ return d.total_cost; })])
+			   .range([height-padding, padding]);
+		}
+		if(yAxis){
+			yAxis.scale(yScale);
+		}else{
+			yAxis = d3.svg.axis()
+					.scale(yScale)
+					.orient("left")
+					.ticks(5);
+		}
+		console.log(yScale);
+		if(xScale){
+			xScale.domain([0, graphData[procedureCode].length]);
+		}else{
+			xScale = d3.scale.linear()
+					.domain([0, graphData[procedureCode].length])
+					.range([padding, width-padding]);
+		}
+		if(xAxis){
+			xAxis.scale(xScale);
+		}else{
+			xAxis = d3.svg.axis()
+				  .scale(xScale)
+				  .orient("bottom");
+		}
+
+
+		//update graph with new data
+		if(xAxisDrawn){
+			xAxisDrawn.call(xAxis);
+		}else{
+			xAxisDrawn = graph.append("g")
+						.attr("class", "axis")
+    					.attr("transform", "translate(0," + (height - padding) + ")")
+      					.call(xAxis);
+      	}
+      	if(yAxisDrawn){
+      		yAxisDrawn.call(yAxis);
+      	}else{
+      		yAxisDrawn = graph.append("g")
+      					.attr("class", "axis")
+      					.attr("transform", "translate(" + padding + ",0)")
+      					.call(yAxis);
+      	}
+    }
+
+
+	/*	Initialize D3   */
+	//D3 Constants
+	var width = window.innerWidth* 0.9;
+	var height = window.innerHeight * 0.8;
+	var padding = 25;
+
+	var yScale;
+	var yAxis;
+
+	var xScale;
+	var xAxis;
+
+	var tooltip = d3.select("body").append("div")
+	    .attr("class", "tooltip")
+	    .style("opacity", 0);
+
+	var graph = d3.select("body")
+				.append("svg")
+				.attr("width", width)
+				.attr("height", height)
+				.attr("style","border:1px solid")
+	
+	var xAxisDrawn;
+	var yAxisDrawn;
+
+	//add drag behaviour
+	var drag = d3.behavior.drag();
+	var zoom = d3.behavior.zoom();
+
+
+
+</script>
+</body>
+</html>
