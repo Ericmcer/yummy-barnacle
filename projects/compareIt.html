@@ -99,7 +99,6 @@
 	//draws point graph, inject graphData into D3 svg area
 	var graphProcedureChanged = function(evt){
 		var procedureCode = evt.target.value;
-		console.log(d3.max(graphData, function()))
 		//Update Axis and Scales
 		if(yScale){
 			yScale.domain([0, d3.max(graphData, function(d){ return d.total_cost; })]);
